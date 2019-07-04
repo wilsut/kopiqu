@@ -14,7 +14,7 @@ class SaleDetailController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json(SaleDetail::all(), 200);
     }
 
     /**
@@ -35,7 +35,18 @@ class SaleDetailController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $saleDetail = saleDetail::create([
+            'product_id' => $request->product_id,
+            'sale_master_id' => $request->sale_master_id,
+            'quantity' => $request->quantity,
+            'price' => $request->price
+        ]);
+
+        return response()->json([
+            'status' => (bool) $saleDetail,
+            'data'   => $saleDetail,
+            'message' => $saleDetail ? 'Order Created!' : 'Error Creating Order'
+        ]);
     }
 
     /**
@@ -46,7 +57,7 @@ class SaleDetailController extends Controller
      */
     public function show(SaleDetail $saleDetail)
     {
-        //
+        return response()->json($saleDetail, 200);
     }
 
     /**
@@ -80,6 +91,11 @@ class SaleDetailController extends Controller
      */
     public function destroy(SaleDetail $saleDetail)
     {
-        //
+        $status = $saleDetail->delete();
+
+        return response()->json([
+            'status' => $status,
+            'message' => $status ? 'Order Deleted!' : 'Error Deleting Order'
+        ]);
     }
 }

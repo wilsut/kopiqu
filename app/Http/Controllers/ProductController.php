@@ -14,7 +14,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json(Product::all(), 200);
     }
 
     /**
@@ -35,7 +35,20 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $product = Product::create([
+            'name' => $request->name,
+            'description' => $request->description,
+            'weight' => $request->weight,
+            'price' => $request->price,
+            'image' => $request->image,
+            'category_id' => $request->category_id
+        ]);
+
+        return response()->json([
+            'status' => (bool) $product,
+            'data'   => $product,
+            'message' => $product ? 'Product Created!' : 'Error Creating Product'
+        ]);
     }
 
     /**
@@ -46,7 +59,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        //
+        return response()->json($product, 200);
     }
 
     /**
@@ -60,6 +73,16 @@ class ProductController extends Controller
         //
     }
 
+    public function uploadFile(Request $request)
+    {
+        if ($request->hasFile('image')) {
+            $name = time()."_".$request->file('image')->getClientOriginalName();
+            $request->file('image')->move(public_path('images'), $name);
+        }
+
+        return response()->json(asset("images/$name"), 201);
+    }
+
     /**
      * Update the specified resource in storage.
      *
@@ -69,7 +92,14 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        //
+        $status = $product->update(
+            $request->only(['name', 'description', 'weight', 'price', 'image', 'category_id'])
+        );
+
+        return response()->json([
+            'status' => $status,
+            'message' => $status ? 'Product Updated!' : 'Error Updating Product'
+        ]);
     }
 
     /**
@@ -80,6 +110,11 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        //
+        $status = $product->delete();
+
+        return response()->json([
+            'status' => $status,
+            'message' => $status ? 'Product Deleted!' : 'Error Deleting Product'
+        ]);
     }
 }

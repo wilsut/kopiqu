@@ -14,7 +14,7 @@ class SaleMasterController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json(SaleMaster::with(['saleDetails'])->get(), 200);
     }
 
     /**
@@ -35,7 +35,19 @@ class SaleMasterController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $saleMaster = SaleMaster::create([
+            'user_id' => Auth::id(),
+            'address' => $request->address,
+            'status' => $request->status,
+            'shipping' => $request->shipping,
+            'random_number' => $request->random_number
+        ]);
+
+        return response()->json([
+            'status' => (bool) $saleMaster,
+            'data'   => $saleMaster,
+            'message' => $saleMaster ? 'Order Created!' : 'Error Creating Order'
+        ]);
     }
 
     /**
@@ -46,7 +58,7 @@ class SaleMasterController extends Controller
      */
     public function show(SaleMaster $saleMaster)
     {
-        //
+        return response()->json($saleMaster, 200);
     }
 
     /**
@@ -69,7 +81,14 @@ class SaleMasterController extends Controller
      */
     public function update(Request $request, SaleMaster $saleMaster)
     {
-        //
+        $status = $saleMaster->update(
+            $request->only(['status'])
+        );
+
+        return response()->json([
+            'status' => $status,
+            'message' => $status ? 'Order Updated!' : 'Error Updating Order'
+        ]);
     }
 
     /**
@@ -80,6 +99,11 @@ class SaleMasterController extends Controller
      */
     public function destroy(SaleMaster $saleMaster)
     {
-        //
+        $status = $saleMaster->delete();
+
+        return response()->json([
+            'status' => $status,
+            'message' => $status ? 'Order Deleted!' : 'Error Deleting Order'
+        ]);
     }
 }
